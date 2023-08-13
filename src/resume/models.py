@@ -22,5 +22,5 @@ class Resume(Base):
     additional_education = Column(String)
     skills = Column(String, nullable=False)
     projects = Column(String)
-
+    photo = Column(String, nullable=True)
     user = relationship("User", back_populates="resumes")  # Обратная связь с пользователем

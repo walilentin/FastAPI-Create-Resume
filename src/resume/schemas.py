@@ -13,3 +13,4 @@ class ResumeCreate(BaseModel):
     additional_education: str = None
     skills: str
     projects: str = None
+    photo: str

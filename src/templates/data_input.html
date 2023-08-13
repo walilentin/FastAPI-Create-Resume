@@ -5,7 +5,7 @@
     <div class="section-title">
         <h2>Resume Input</h2>
     </div>
-    <form id="resume-form" action="/resume" method="post">
+<form id="resume-form" action="/upload_resume" method="post" enctype="multipart/form-data">
         <div class="mb-3">
             <label for="full_name" class="form-label">Full Name</label>
             <input type="text" class="form-control" id="full_name" name="full_name">
@@ -46,39 +46,65 @@
             <label for="projects" class="form-label">University Projects</label>
             <textarea class="form-control" id="projects" name="projects" rows="4"></textarea>
         </div>
+        <div class="mb-3">
+            <label for="photo" class="form-label">Photo</label>
+            <input type="file" class="form-control" id="photo" name="photo">
+        </div>
+
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const form = document.getElementById('resume-form');
-            form.addEventListener("submit", async function (event) {
-                event.preventDefault();
-                const formData = new FormData(form);
-                const formObject = {};
-                formData.forEach((value, key) => {
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById('resume-form');
+        form.addEventListener("submit", async function (event) {
+            event.preventDefault();
+            const formData = new FormData(form);
+            const formObject = {};
+
+            // Convert photo input to base64 string
+            const photoInput = formData.get('photo');
+            const photoFile = photoInput && photoInput instanceof File ? photoInput : null;
+            if (photoFile) {
+                const photoBase64 = await getBase64FromFile(photoFile);
+                formObject['photo'] = photoBase64;
+            }
+
+            formData.forEach((value, key) => {
+                if (key !== 'photo') {
                     formObject[key] = value;
-                });
-
-                try {
-                    const response = await fetch('/resume', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(formObject)
-                    });
-
-                    if (response.ok) {
-                        window.location.href = "/"; // Замініть "/" на URL вашої головної сторінки
-                    } else {
-                        console.error('Error:', response.statusText);
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
                 }
             });
+
+            try {
+                const response = await fetch('/resume', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formObject)
+                });
+
+                if (response.ok) {
+                    window.location.href = "/";
+                } else {
+                    console.error('Error:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
         });
-    </script>
+    });
+
+    function getBase64FromFile(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = error => reject(error);
+        });
+    }
+</script>
+
 </body>
 {% endblock %}

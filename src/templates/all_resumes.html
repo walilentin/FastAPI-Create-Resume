@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Your Resumes:</h1>
+    <ul>
+            <hr>
+        {% for r in resume %}
+                <img src="data:image/jpeg;base64,{{ r.photo }}" class="profile-image" alt="Resume Photo" style="max-width: 150px;">
+            <li>
+                <strong>Full Name:</strong> {{ r.full_name }}<br>
+                <strong>Address:</strong> {{ r.address }}<br>
+                <strong>Birthdate:</strong> {{ r.birthdate }}<br>
+                <strong>Phone:</strong> {{ r.phone }}<br>
+                <strong>Email:</strong> {{ r.email }}<br>
+                <strong>GitHub:</strong> <a href="{{ r.github }}">{{ r.github }}</a><br>
+                <strong>Education:</strong> {{ r.education }}<br>
+                <strong>Additional Education:</strong> {{ r.additional_education }}<br>
+                <strong>Skills:</strong> {{ r.skills }}<br>
+                <strong>Projects:</strong> {{ r.projects }}<br>
+            </li>
+            <hr>
+        {% endfor %}
+    </ul>
+
+    <a href="/">Go back to home</a>
+{% endblock %}

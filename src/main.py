@@ -1,16 +1,22 @@
+from io import BytesIO
+
 from fastapi.staticfiles import StaticFiles
 from fastapi import FastAPI, Depends, Request, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
-from sqlalchemy import select, desc, update
+from sqlalchemy import select, desc, insert
 from sqlalchemy.ext.asyncio import AsyncSession
+from starlette.responses import StreamingResponse, HTMLResponse
+
 from src.chat.router import router as router_chat
 from src.database import get_async_session
 from src.resume.models import Resume
+from src.resume.schemas import ResumeCreate
 from src.users.base_config import fastapi_users, auth_backend
 from src.users.manager import get_user_manager
 from src.users.schemas import UserCreate, UserRead
 from src.resume.router import router as resume_router
+from fastapi.responses import RedirectResponse
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -44,7 +50,18 @@ async def get_chat_page(request: Request, current_user: get_user_manager = Depen
 async def data_input(request: Request, current_user: get_user_manager = Depends(fastapi_users.current_user(active=True, optional=True))):
     return templates.TemplateResponse("data_input.html", {"request": request, "user": current_user})
 
+@app.get("/all_resumes")
+async def get_all_resumes(request: Request, current_user: get_user_manager = Depends(fastapi_users.current_user(active=True, optional=True)), session: AsyncSession = Depends(get_async_session)):
+    if current_user:
+        query = select(Resume).where(Resume.user_id == current_user.id)
+        resume = await session.execute(query)
+        resume = resume.scalars().all()
+    else:
+        resume = None
+    return templates.TemplateResponse("all_resumes.html", {"request": request, "user": current_user, "resume": resume})
 
+
+    return StreamingResponse(BytesIO(resume.photo), media_type="image/jpeg")
 app.include_router(
     fastapi_users.get_auth_router(auth_backend),
     prefix="/auth/jwt",

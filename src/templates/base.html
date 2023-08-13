@@ -9,31 +9,37 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
         }
         .navbar-nav {
             display: flex;
             align-items: center;
-            margin-left: auto; /* Змінили цей стиль для зміщення вправо */
+            margin-left: auto;
         }
         .username {
-            margin-right: 10px; /* Додали відступ справа від імені користувача */
+            margin-right: 10px;
         }
         .profile-image {
-            max-width: 200px;
-            height: auto;
-            border-radius: 50%;
+            max-width: 300px;
+            max-height: 300px;
+            border-radius: 10%;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
         }
         .content {
             padding: 2rem;
-            background-color: #f8f9fa;
+            background-color: #ffffff;
             border-radius: 5px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
         }
         .section-title {
             border-bottom: 2px solid #343a40;
             padding-bottom: 10px;
             margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: bold;
         }
         .skill-list {
             list-style-type: square;
@@ -46,20 +52,22 @@
         <div class="container">
             <a class="navbar-brand" href="/">Резюме</a>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ml-auto">
+                <ul class="navbar-nav">
                     {% if user %}
                         <li class="nav-item">
-                        <form id="data_input" action="/data_input" method="get" class="form-inline">
-                            <button type="submit" class="btn btn-link">Створити резюме</button>
-                        </form>
+                            <form id="all_resumes" action="/all_resumes" method="get" class="form-inline">
+                            <button class="btn btn-link nav-link">Мої резюме</button>
+                            </form>
                         </li>
                         <li class="nav-item">
-                            <span class="navbar-text username">{{ user.username }}</span>
+                            <form id="data_input" action="/data_input" method="get" class="form-inline">
+                                <button type="submit" class="btn btn-link nav-link">Створити резюме</button>
+                            </form>
                         </li>
                         <li class="nav-item">
-                        <form id="logout-form" action="/auth/jwt/logout" method="post" class="form-inline">
-                            <button type="submit" class="btn btn-link">Вийти</button>
-                        </form>
+                            <form id="logout-form" action="/auth/jwt/logout" method="post" class="form-inline">
+                                <button type="submit" class="btn btn-link nav-link">Вийти</button>
+                            </form>
                         </li>
                     {% else %}
                         <li class="nav-item">
@@ -78,42 +86,42 @@
     <div class="container">
         <div class="content">
             {% block content %}
-            <div class="section-title">
-                <h2>Personal Information</h2>
-            </div>
-            {% if user %}
-                <div class="row">
-                    <div class="col-md-4">
-                        <img src="data:image/jpeg;base64,{{ resume.photo }}" alt="Фото">
-                    </div>
-                    <div class="col-md-8">
-                        <p><strong>Full Name:</strong> {{ resume.full_name }}</p>
-                        <p><strong>Address:</strong> {{ resume.address }}</p>
-                        <p><strong>Birthdate:</strong>{{ resume.birthdate }}</p>
-                        <p><strong>Phone:</strong> {{ resume.phone }}</p>
-                        <p><strong>Email:</strong> {{ resume.email }}</p>
-                        <p><strong>GitHub:</strong> <a href="{{ resume.github }}">{{ resume.github }}</a></p>
-                    </div>
-                </div>
-
                 <div class="section-title">
-                    <h2>Education</h2>
+                    <h2>Personal Information</h2>
                 </div>
-                <p><strong></strong>{{ resume.education }}</p>
-
-            <div class="section-title">
-                <h2>Additional Education</h2>
-            </div>
-            <p><strong></strong>{{ resume.additional_education }}</p>
-
-            <div class="section-title">
-                <h2>Skills</h2>
-            </div>
-            <ul class="skill-list">
-                <li>{{ resume.skills }}</li>
-            </ul>
-        </div>
-
+                {% if user %}
+                    <div class="row">
+                        <div class="col-md-4">
+                            {% if resume.photo %}
+                                <img src="data:image/jpeg;base64,{{ resume.photo }}" class="profile-image" alt="Resume Photo">
+                            {% else %}
+                                <p>Фото відсутнє</p>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-8">
+                            <p><strong>Full Name:</strong> {{ resume.full_name }}</p>
+                            <p><strong>Address:</strong> {{ resume.address }}</p>
+                            <p><strong>Birthdate:</strong> {{ resume.birthdate }}</p>
+                            <p><strong>Phone:</strong> {{ resume.phone }}</p>
+                            <p><strong>Email:</strong> {{ resume.email }}</p>
+                            <p><strong>GitHub:</strong> <a href="{{ resume.github }}">{{ resume.github }}</a></p>
+                        </div>
+                    </div>
+                    <div class="section-title">
+                        <h2>Education</h2><p></p>
+                    </div>
+                    <p><strong>Education:</strong> {{ resume.education }}</p>
+                    <div class="section-title">
+                        <h2>Additional Education</h2>
+                    </div>
+                    <p><strong>Additional Education:</strong> {{ resume.additional_education }}</p>
+                    <div class="section-title">
+                        <h2>Skills</h2>
+                    </div>
+                    <ul class="skill-list">
+                        <li>{{ resume.skills }}</li>
+                    </ul>
+                </div>
             {% else %}
                 <div class="unauthorized-text">
                     <p>Авторизуйся, щоб побачити більше інформації.</p>
@@ -123,16 +131,10 @@
         </div>
     </div>
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const logoutForm = document.getElementById("logout-form");
-
-        if (logoutForm) {
-            logoutForm.addEventListener("submit", function () {
-                setTimeout(function () {
-                    window.location.reload();
-                }, 500); // Почекайте 500 мілісекунд перед оновленням сторінки
-            });
-        }
+    document.getElementById("logout-form").addEventListener("submit", function() {
+        setTimeout(function() {
+            location.reload();
+        }, 1000); // Оновлення через 1 секунду (за бажанням, змініть цей час за потребою)
     });
 </script>
 </body>
