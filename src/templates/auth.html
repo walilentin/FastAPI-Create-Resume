@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Вхід</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        .container {
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-label {
+            font-weight: bold;
+        }
+
+        .form-control {
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.querySelector("form");
+            form.addEventListener("submit", async function (event) {
+                event.preventDefault(); // Зупиняємо стандартну поведінку форми
+                const formData = new FormData(form);
+                const response = await fetch("auth/jwt/login", {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (response.ok) {
+                    window.location.href = "/"; // Замініть "/" на URL вашої головної сторінки
+                } else {
+                    // Обробка помилок, якщо необхідно
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Вхід</h2>
+        <form>
+            <div class="mb-3">
+                <label for="username" class="form-label">Логін:</label>
+                <input type="text" id="username" name="username" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label">Пароль:</label>
+                <input type="password" id="password" name="password" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Увійти</button>
+        </form>
+    </div>
+</body>
+</html>

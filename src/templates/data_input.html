@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+<body>
+    <div class="section-title">
+        <h2>Resume Input</h2>
+    </div>
+    <form id="resume-form" action="/resume" method="post">
+        <div class="mb-3">
+            <label for="full_name" class="form-label">Full Name</label>
+            <input type="text" class="form-control" id="full_name" name="full_name">
+        </div>
+        <div class="mb-3">
+            <label for="address" class="form-label">Address</label>
+            <input type="text" class="form-control" id="address" name="address">
+        </div>
+        <div class="mb-3">
+            <label for="birthdate" class="form-label">Birthdate</label>
+            <input type="text" class="form-control" id="birthdate" name="birthdate">
+        </div>
+        <div class="mb-3">
+            <label for="phone" class="form-label">Phone</label>
+            <input type="text" class="form-control" id="phone" name="phone">
+        </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email">
+        </div>
+        <div class="mb-3">
+            <label for="github" class="form-label">GitHub</label>
+            <input type="text" class="form-control" id="github" name="github">
+        </div>
+        <div class="mb-3">
+            <label for="education" class="form-label">Education</label>
+            <input type="text" class="form-control" id="education" name="education">
+        </div>
+        <div class="mb-3">
+            <label for="additional_education" class="form-label">Additional Education</label>
+            <input type="text" class="form-control" id="additional_education" name="additional_education">
+        </div>
+        <div class="mb-3">
+            <label for="skills" class="form-label">Skills</label>
+            <textarea class="form-control" id="skills" name="skills" rows="4"></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="projects" class="form-label">University Projects</label>
+            <textarea class="form-control" id="projects" name="projects" rows="4"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById('resume-form');
+            form.addEventListener("submit", async function (event) {
+                event.preventDefault();
+                const formData = new FormData(form);
+                const formObject = {};
+                formData.forEach((value, key) => {
+                    formObject[key] = value;
+                });
+
+                try {
+                    const response = await fetch('/resume', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formObject)
+                    });
+
+                    if (response.ok) {
+                        window.location.href = "/"; // Замініть "/" на URL вашої головної сторінки
+                    } else {
+                        console.error('Error:', response.statusText);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+    </script>
+</body>
+{% endblock %}
