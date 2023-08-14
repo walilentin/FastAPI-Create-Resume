@@ -2,25 +2,32 @@
 
 {% block content %}
     <h1>Your Resumes:</h1>
-    <ul>
-            <hr>
+    <div class="accordion" id="resumeAccordion">
         {% for r in resume %}
-                <img src="data:image/jpeg;base64,{{ r.photo }}" class="profile-image" alt="Resume Photo" style="max-width: 150px;">
-            <li>
-                <strong>Full Name:</strong> {{ r.full_name }}<br>
-                <strong>Address:</strong> {{ r.address }}<br>
-                <strong>Birthdate:</strong> {{ r.birthdate }}<br>
-                <strong>Phone:</strong> {{ r.phone }}<br>
-                <strong>Email:</strong> {{ r.email }}<br>
-                <strong>GitHub:</strong> <a href="{{ r.github }}">{{ r.github }}</a><br>
-                <strong>Education:</strong> {{ r.education }}<br>
-                <strong>Additional Education:</strong> {{ r.additional_education }}<br>
-                <strong>Skills:</strong> {{ r.skills }}<br>
-                <strong>Projects:</strong> {{ r.projects }}<br>
-            </li>
-            <hr>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading{{ r.id }}">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ r.id }}" aria-expanded="true" aria-controls="collapse{{ r.id }}">
+                        {{ r.full_name }}
+                    </button>
+                </h2>
+                <div id="collapse{{ r.id }}" class="accordion-collapse collapse" aria-labelledby="heading{{ r.id }}" data-bs-parent="#resumeAccordion">
+                    <div class="accordion-body">
+                        <img src="data:image/jpeg;base64,{{ r.photo }}" class="profile-image" alt="Resume Photo" style="max-width: 150px;">
+                        <p><strong>Full Name:</strong> {{ r.full_name }}</p>
+                        <p><strong>Address:</strong> {{ r.address }}</p>
+                        <p><strong>Birthdate:</strong> {{ r.birthdate }}</p>
+                        <p><strong>Phone:</strong> {{ r.phone }}</p>
+                        <p><strong>Email:</strong> {{ r.email }}</p>
+                        <p><strong>GitHub:</strong> <a href="{{ r.github }}">{{ r.github }}</a></p>
+                        <p><strong>Education:</strong> {{ r.education }}</p>
+                        <p><strong>Additional Education:</strong> {{ r.additional_education }}</p>
+                        <p><strong>Skills:</strong> {{ r.skills }}</p>
+                        <p><strong>Projects:</strong> {{ r.projects }}</p>
+                    </div>
+                </div>
+            </div>
         {% endfor %}
-    </ul>
+    </div>
 
-    <a href="/">Go back to home</a>
+    <a href="/">На головну</a>
 {% endblock %}

@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import select, desc, insert
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 from starlette.responses import StreamingResponse, HTMLResponse
 
 from src.chat.router import router as router_chat
@@ -23,9 +24,12 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 @app.get("/login")
-def get_chat_page(request: Request):
+async def get_login_page(request: Request):
     return templates.TemplateResponse("auth.html", {"request": request})
 
+@app.get("/register")
+async def get_register_page(request: Request):
+    return templates.TemplateResponse("registration.html", {"request": request})
 @app.get("/secured")
 async def secured_route(current_user: get_user_manager = Depends(fastapi_users.current_user(active=True, optional=True))):
     if current_user:
@@ -41,6 +45,7 @@ async def home(request: Request, session: AsyncSession = Depends(get_async_sessi
     else:
         resume = None
     return templates.TemplateResponse("base.html", {"request": request, "user": current_user, "resume": resume})
+
 
 @app.get("/chat")
 async def get_chat_page(request: Request, current_user: get_user_manager = Depends(fastapi_users.current_user(active=True, optional=True))):
@@ -70,17 +75,22 @@ app.include_router(
 
 app.include_router(
     fastapi_users.get_register_router(UserRead, UserCreate),
-    prefix="/register",
-    tags=["register"],
+    prefix="/auth/jwt",
+    tags=["auth"],
 )
 app.include_router(router_chat)
 app.include_router(resume_router)
-origins = ["*"]
+
+
+origins = [
+    "http://localhost:3000",
+]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "OPTIONS", "DELETE", "PATCH", "PUT"],
+    allow_headers=["Content-Type", "Set-Cookie", "Access-Control-Allow-Headers", "Access-Control-Allow-Origin",
+                   "Authorization"],
 )

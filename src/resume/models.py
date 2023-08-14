@@ -1,11 +1,9 @@
-from sqlalchemy import Column, Integer, String, MetaData, Date, LargeBinary, ForeignKey
+from sqlalchemy import Column, Integer, String, MetaData,ForeignKey
 from sqlalchemy.orm import relationship
 
 from src.database import Base
 
 metadata = MetaData()
-
-
 
 class Resume(Base):
     __tablename__ = "resume"
